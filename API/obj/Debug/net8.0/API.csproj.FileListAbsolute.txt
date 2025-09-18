@@ -154,6 +154,7 @@ D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.AssemblyInfo.cs
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.csproj.CoreCompileInputs.cache
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.MvcApplicationPartsAssemblyInfo.cs
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.MvcApplicationPartsAssemblyInfo.cache
+D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.sourcelink.json
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\rjimswa.dswa.cache.json
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
