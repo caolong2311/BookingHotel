@@ -26,6 +26,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(x => x
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+    .WithOrigins("http://localhost:5173")
+    .WithExposedHeaders("Pagination"));
 app.UseAuthorization();
 
 app.MapControllers();

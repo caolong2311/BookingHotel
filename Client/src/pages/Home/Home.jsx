@@ -1,0 +1,78 @@
+import './Home.css'
+import { assets } from '../../assets/assets'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+const Home = () => {
+    const [rooms, setRooms] = useState([])
+
+    useEffect(() => {
+        axios.get('https://localhost:7182/RoomType')
+            .then(res => setRooms(res.data))
+            .catch(err => console.error(err))
+    }, [])
+    return (
+        <div className="home-container">
+
+            <img src={assets.khachsan} alt="Khách sạn" className="home-image-top" />
+
+            <div className="home-content">
+                <div className="home-text">
+                    <h2 className="welcome-text">Chào mừng đến với Khách sạn Dragon</h2>
+                    <p>
+                        Khách sạn Dragon là điểm đến lý tưởng cho những ai tìm kiếm sự sang trọng, tiện nghi hiện đại và dịch vụ hoàn hảo.
+                        Tọa lạc tại vị trí thuận lợi, khách sạn cung cấp các phòng nghỉ rộng rãi với thiết kế tinh tế, kết hợp hài hòa giữa phong cách hiện đại và nét truyền thống đặc trưng.
+                    </p>
+                    <p>
+                        Chúng tôi tự hào mang đến trải nghiệm ẩm thực độc đáo tại nhà hàng cao cấp, không gian thư giãn tại spa, cùng các tiện ích giải trí phong phú. Đội ngũ nhân viên tận tâm luôn sẵn sàng phục vụ, đảm bảo mỗi kỳ nghỉ tại Khách sạn Dragon là một trải nghiệm khó quên.
+                    </p>
+                    <p>
+                        Dù là chuyến công tác hay kỳ nghỉ gia đình, Khách sạn Dragon cam kết đem đến sự thoải mái, an toàn và hài lòng tối đa cho mọi khách hàng.
+                    </p>
+                </div>
+                <div className="home-image-container">
+                    <img src={assets.khachsan3} alt="Khách sạn bổ sung" className="home-image" />
+                </div>
+            </div>
+
+            <div className="room-text">
+                <h2>Phòng khách sạn cao cấp và sang trọng</h2>
+            </div>
+            <div className="room-list">
+                {rooms.map(room => (
+                    <div key={room.roomTypeId} className="room-card">
+                        <img src={room.image} alt={room.typeName} />
+                        <div className="room-price">
+                            Từ {room.basePrice.toLocaleString()} VND / ngày
+                        </div>
+                        <div className="room-quantity">
+                            {room.totalRooms} phòng
+                        </div>
+                        <h3>Phòng {room.typeName}</h3>
+                        <p> {room.area} m²</p>
+                        <p> {room.bedDescription}</p>
+                        <button className="book-btn">Đặt Phòng </button>
+                    </div>
+                ))}
+            </div>
+            <div className="room-text">
+                <h2>Tiện ích đẳng cấp</h2>
+            </div>
+            <div className="amenities-container">
+                <div className="amenity-card">
+                    <img src={assets.wifi} alt="Wifi" />
+                    <p>Wifi miễn phí</p>
+                </div>
+                <div className="amenity-card">
+                    <img src={assets.xeduadon} alt="Xe đưa đón" />
+                    <p>Xe đưa đón</p>
+                </div>
+                <div className="amenity-card">
+                    <img src={assets.buffet} alt="Buffet" />
+                    <p>Buffet sáng</p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Home

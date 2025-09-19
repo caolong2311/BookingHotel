@@ -1,0 +1,42 @@
+.navbar {
+  padding: 1rem 2rem;
+  width: 100%;    
+  top: 0;          
+  left: 0;
+  position: fixed;  
+  display: flex;   
+  justify-content: center; 
+  background-color: transparent; /* mặc định trong suốt */
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.navbar.scrolled {
+  background-color: #222222; /* khi cuộn thì đổi sang đen */
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 1.5rem; 
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-links li a:hover {
+  background-color: #fdaf17;
+}
+
+.nav-links li.active a {
+  background-color: #fdaf17;
+  color: white;
+}
