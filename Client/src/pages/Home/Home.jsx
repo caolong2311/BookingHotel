@@ -1,19 +1,42 @@
 import './Home.css'
 import { assets } from '../../assets/assets'
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-const Home = () => {
-    const [rooms, setRooms] = useState([])
+import React, { useContext } from 'react'
+import { Link } from 'react-router-dom';
+import { StoreContext } from '../../context/StoreContext'
+import RoomType from '../../components/RoomType/RoomType';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";       
+import "slick-carousel/slick/slick-theme.css"; 
 
-    useEffect(() => {
-        axios.get('https://localhost:7182/RoomType')
-            .then(res => setRooms(res.data))
-            .catch(err => console.error(err))
-    }, [])
+const Home = () => {
+    const images = [assets.khachsan, assets.list1, assets.list4, assets.list5];
+
+    const settings = {
+        dots: false,            
+        infinite: true,       
+        speed: 2000,            
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,         
+        autoplaySpeed: 3000,    
+        cssEase: "ease-in-out",
+        pauseOnHover: false,
+        pauseOnFocus: false 
+    };
+
     return (
         <div className="home-container">
-
-            <img src={assets.khachsan} alt="Khách sạn" className="home-image-top" />
+            <Slider {...settings}>
+                {images.map((img, i) => (
+                    <div key={i}>
+                        <img
+                            src={img}
+                            alt={`slide-${i}`}
+                            className="home-image-top"
+                        />
+                    </div>
+                ))}
+            </Slider>
 
             <div className="home-content">
                 <div className="home-text">
@@ -37,23 +60,8 @@ const Home = () => {
             <div className="room-text">
                 <h2>Phòng khách sạn cao cấp và sang trọng</h2>
             </div>
-            <div className="room-list">
-                {rooms.map(room => (
-                    <div key={room.roomTypeId} className="room-card">
-                        <img src={room.image} alt={room.typeName} />
-                        <div className="room-price">
-                            Từ {room.basePrice.toLocaleString()} VND / ngày
-                        </div>
-                        <div className="room-quantity">
-                            {room.totalRooms} phòng
-                        </div>
-                        <h3>Phòng {room.typeName}</h3>
-                        <p> {room.area} m²</p>
-                        <p> {room.bedDescription}</p>
-                        <button className="book-btn">Đặt Phòng </button>
-                    </div>
-                ))}
-            </div>
+            <RoomType />
+
             <div className="room-text">
                 <h2>Tiện ích đẳng cấp</h2>
             </div>

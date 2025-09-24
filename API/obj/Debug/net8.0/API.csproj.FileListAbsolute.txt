@@ -163,7 +163,6 @@ D:\Projects\BookingHotel\API\obj\Debug\net8.0\staticwebassets.build.json
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\staticwebassets.development.json
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-D:\Projects\BookingHotel\API\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.csproj.Up2Date
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.dll
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\refint\API.dll

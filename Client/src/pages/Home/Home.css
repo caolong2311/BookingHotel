@@ -1,16 +1,15 @@
 div {
     width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* phông chữ đẹp */
+ 
 }
 
-/* Hình ảnh trên cùng giữ nguyên */
 img.home-image-top {
     width: 100%;
-    height: auto;
     display: block;
     margin: 0 auto 40px auto;
-    border-radius: 10px;
+    border-radius: 50px;
+    max-height: 550px;
 }
 
 .home-content {
@@ -73,83 +72,6 @@ img.home-image-top {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.room-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: space-between;
-    margin: 30px auto 0;
-    width: 90%;
-}
-
-.room-card {
-    flex: 1 1 22%;
-    max-width: 280px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    background-color: #fff;
-}
-
-.room-card:hover {
-    transform: translateY(-15px);
-}
-
-.room-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-/* .room-price {
-    background-color: #5a4b3d;
-    color: #fff;
-    padding: 5px 10px;
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-}  */
-
-/* .room-quantity {
-    background-color: #fdaf17;
-    color: #fff;
-    padding: 5px 10px;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-} */
-
-.room-card h3 {
-    margin: 10px 0 5px 0;
-    font-size: 18px;
-}
-
-.room-card p {
-    margin: 3px 0;
-    font-size: 14px;
-    color: #555;
-}
-
-.book-btn {
-    margin: 10px 0 15px 0;
-    padding: 8px 15px;
-    background-color: #fdaf17;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.book-btn:hover {
-    background-color: #e6990f;
-}
 
 .amenities-container {
   display: flex;
