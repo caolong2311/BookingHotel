@@ -10,6 +10,7 @@ import RoomDetail from './pages/RoomDetail/RoomDetail';
 import ScrollToTop from './components/ScrollToTop';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import Order from './pages/order/order';
 function App() {
 
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/dat-phong" element={<Booking />} />
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/:roomName" element={<RoomDetail />} />
+        <Route path="/order" element = {<Order/>}/>
       </Routes>
       <Footer></Footer>
     </>

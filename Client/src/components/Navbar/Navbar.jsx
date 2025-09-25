@@ -26,7 +26,7 @@ const Navbar = () => {
     <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
       <ul className="nav-links">
         <li className={menu === "GioiThieu" ? "active" : ""}>
-          <Link to='/' onClick={() => setMenu("GioiThieu")}>Giới thiệu</Link>
+          <Link to='/' onClick={() => setMenu("GioiThieu")}>Trang chủ</Link>
         </li>
         <li className={menu === "DatPhong" ? "active" : ""}>
           <Link to='/dat-phong' onClick={() => setMenu("DatPhong")}>Đặt phòng</Link>

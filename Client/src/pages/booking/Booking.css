@@ -3,7 +3,7 @@ img.home-image-top-booking {
     height: auto;
     display: block;
     margin: 0 auto 40px auto;
-    border-radius: 10px;
+    border-radius: 50px;
     max-height: 400px;
 }
 
@@ -23,7 +23,6 @@ img.home-image-top-booking {
 
 .booking-form label {
     flex: 1;
-
     flex-direction: column;
     font-weight: bold;
     font-size: 20px;
@@ -144,7 +143,7 @@ img.home-image-top-booking {
   flex: 1;  
   max-width: 300px;           
   width: 100%;
-   margin-left: 20px; 
+  margin-left: 20px; 
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   padding: 20px;

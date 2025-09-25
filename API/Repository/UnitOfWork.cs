@@ -5,7 +5,7 @@ namespace API.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public IRoomTypeRepository RoomTypes {  get; set; }
+        public IRoomTypeRepository RoomTypes { get; set; }
 
         private readonly HotelContext _context;
 

@@ -42,7 +42,7 @@ public partial class HotelContext : DbContext
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.PaymentMethod).HasMaxLength(20);
-            entity.Property(e => e.RoomId).HasColumnName("RoomID");
+            entity.Property(e => e.RoomNumber).HasMaxLength(10);
             entity.Property(e => e.RoomTypeId).HasColumnName("RoomTypeID");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
@@ -54,8 +54,9 @@ public partial class HotelContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Bookings_Customers");
 
-            entity.HasOne(d => d.Room).WithMany(p => p.Bookings)
-                .HasForeignKey(d => d.RoomId)
+            entity.HasOne(d => d.RoomNumberNavigation).WithMany(p => p.Bookings)
+                .HasPrincipalKey(p => p.RoomNumber)
+                .HasForeignKey(d => d.RoomNumber)
                 .HasConstraintName("FK_Bookings_Rooms");
 
             entity.HasOne(d => d.RoomType).WithMany(p => p.Bookings)
@@ -100,6 +101,8 @@ public partial class HotelContext : DbContext
         modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(e => e.RoomId).HasName("PK__Rooms__32863919A979BFF1");
+
+            entity.HasIndex(e => e.RoomNumber, "UQ_RoomNumber").IsUnique();
 
             entity.Property(e => e.RoomId).HasColumnName("RoomID");
             entity.Property(e => e.RoomNumber).HasMaxLength(10);

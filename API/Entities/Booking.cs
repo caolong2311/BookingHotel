@@ -11,8 +11,6 @@ public partial class Booking
 
     public int RoomTypeId { get; set; }
 
-    public int? RoomId { get; set; }
-
     public DateOnly CheckInDate { get; set; }
 
     public DateOnly CheckOutDate { get; set; }
@@ -23,11 +21,13 @@ public partial class Booking
 
     public string? PaymentMethod { get; set; }
 
+    public string? RoomNumber { get; set; }
+
     public virtual ICollection<BookingService> BookingServices { get; set; } = new List<BookingService>();
 
     public virtual Customer Customer { get; set; } = null!;
 
-    public virtual Room? Room { get; set; }
+    public virtual Room? RoomNumberNavigation { get; set; }
 
     public virtual RoomType RoomType { get; set; } = null!;
 }

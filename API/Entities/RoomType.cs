@@ -23,6 +23,7 @@ public partial class RoomType
     public string? Description { get; set; }
 
     public string? Image { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     [JsonIgnore]
