@@ -1,9 +1,11 @@
 ﻿using API.DTO;
 using API.Entities;
 using API.Repository.IRepository;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,12 +18,14 @@ namespace API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly EmailService _emailService;
 
-        public BookingController(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public BookingController(IUnitOfWork unitOfWork, IConfiguration configuration, IHttpClientFactory httpClientFactory, EmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _httpClient = httpClientFactory.CreateClient();
+            _emailService = emailService;
         }
 
         [HttpPost("create-payment")]
@@ -44,7 +48,6 @@ namespace API.Controllers
             string requestType = "captureWallet";
             string extraData = "";
 
-      
             string rawHash =
                 $"accessKey={accessKey}" +
                 $"&amount={amount}" +
@@ -57,7 +60,6 @@ namespace API.Controllers
                 $"&requestId={requestId}" +
                 $"&requestType={requestType}";
 
-          
             string signature;
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
             {
@@ -99,17 +101,16 @@ namespace API.Controllers
             }
         }
 
-
-
-
         [HttpPost]
         public async Task<IActionResult> Booking(BookingDto bookingDto)
         {
             if (bookingDto == null) return BadRequest("Lỗi dữ liệu");
+
             try
             {
                 await _unitOfWork.ExecuteInTransactionAsync(async () =>
                 {
+    
                     var customer = _unitOfWork.Customer.Get(c => c.PhoneNumber == bookingDto.PhoneNumber);
                     if (customer == null)
                     {
@@ -122,6 +123,8 @@ namespace API.Controllers
                         _unitOfWork.Customer.Add(customer);
                         _unitOfWork.Save();
                     }
+
+            
                     var booking = new Booking
                     {
                         CustomerId = customer.CustomerId,
@@ -132,6 +135,8 @@ namespace API.Controllers
                     };
                     _unitOfWork.Booking.Add(booking);
                     _unitOfWork.Save();
+
+               
                     foreach (var d in bookingDto.Details)
                     {
                         for (int i = 0; i < d.Quantity; i++)
@@ -147,6 +152,43 @@ namespace API.Controllers
                         }
                     }
                     _unitOfWork.Save();
+
+        
+                    if (!string.IsNullOrEmpty(customer.Email))
+                    {
+                        var vietnamCulture = new CultureInfo("vi-VN");
+                        string totalPrice = booking.TotalPrice.Value.ToString("C0", vietnamCulture);
+                        string subject = "Xác nhận đặt phòng tại Dragon Hotel";
+
+                        string body = $@"
+                            <p>Xin chào {customer.FullName},</p>
+                            <p>Cảm ơn bạn đã đặt phòng tại <strong>Dragon Hotel</strong>.</p>
+
+                            <p><strong>Chi tiết đặt phòng:</strong></p>
+                            <ul>
+                                <li>Mã booking: {booking.BookingId}</li>
+                                <li>Ngày nhận phòng: {booking.CheckInDate:dd/MM/yyyy}</li>
+                                <li>Ngày trả phòng: {booking.CheckOutDate:dd/MM/yyyy}</li>
+                                <li>Tổng tiền: {totalPrice} VNĐ</li>
+                            </ul>
+
+                            <p><strong>Thông tin khách sạn:</strong></p>
+                            <ul>
+                                <li>Địa chỉ: 123 Đường Nguyễn Đức Cảnh, An Biên, TP. Hải Phòng</li>
+                                <li>Điện thoại: +84 123 456 789</li>
+                            </ul>
+
+                            <p>Chúng tôi rất hân hạnh được phục vụ bạn!</p>
+                            ";
+                        try
+                        {
+                            await _emailService.SendEmailAsync(customer.Email, subject, body);
+                        }
+                        catch
+                        {
+                       
+                        }
+                    }
                 });
 
                 return Ok(new { Message = "Đặt phòng thành công" });
