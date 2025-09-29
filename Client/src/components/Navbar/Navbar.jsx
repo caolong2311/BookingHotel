@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
-
+import { assets } from '../../assets/assets'
 const Navbar = () => {
   const [menu, setMenu] = useState("GioiThieu");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -24,6 +24,11 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
+      {/* <div className="nav-logo">
+        <Link to='/'>
+          <img src={assets.icon3} alt="Logo" className="logo-img" />
+        </Link>
+      </div> */}
       <ul className="nav-links">
         <li className={menu === "GioiThieu" ? "active" : ""}>
           <Link to='/' onClick={() => setMenu("GioiThieu")}>Trang chủ</Link>

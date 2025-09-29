@@ -4,7 +4,7 @@ import { createContext, useEffect, useState } from "react";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-    const url = "https://localhost:7182";
+    const url = "https://localhost:7182/api";
     const [rooms, setRooms] = useState([])
 
     const fetchRoomType = async () => {

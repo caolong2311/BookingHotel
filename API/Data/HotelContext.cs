@@ -18,7 +18,9 @@ public partial class HotelContext : DbContext
 
     public virtual DbSet<Booking> Bookings { get; set; }
 
-    public virtual DbSet<BookingService> BookingServices { get; set; }
+    public virtual DbSet<BookingDetail> BookingDetails { get; set; }
+
+    public virtual DbSet<BookingDetailService> BookingDetailServices { get; set; }
 
     public virtual DbSet<Customer> Customers { get; set; }
 
@@ -37,13 +39,10 @@ public partial class HotelContext : DbContext
     {
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Bookings__73951ACDFA28DDC3");
+            entity.HasKey(e => e.BookingId).HasName("PK__Bookings__73951ACD29803287");
 
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
-            entity.Property(e => e.PaymentMethod).HasMaxLength(20);
-            entity.Property(e => e.RoomNumber).HasMaxLength(10);
-            entity.Property(e => e.RoomTypeId).HasColumnName("RoomTypeID");
             entity.Property(e => e.Status)
                 .HasMaxLength(20)
                 .HasDefaultValue("Pending");
@@ -53,44 +52,58 @@ public partial class HotelContext : DbContext
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Bookings_Customers");
-
-            entity.HasOne(d => d.RoomNumberNavigation).WithMany(p => p.Bookings)
-                .HasPrincipalKey(p => p.RoomNumber)
-                .HasForeignKey(d => d.RoomNumber)
-                .HasConstraintName("FK_Bookings_Rooms");
-
-            entity.HasOne(d => d.RoomType).WithMany(p => p.Bookings)
-                .HasForeignKey(d => d.RoomTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Bookings_RoomTypes");
         });
 
-        modelBuilder.Entity<BookingService>(entity =>
+        modelBuilder.Entity<BookingDetail>(entity =>
         {
-            entity.HasKey(e => e.BookingServiceId).HasName("PK__BookingS__43F55CD1C9397966");
+            entity.HasKey(e => e.BookingDetailId).HasName("PK__BookingD__8136D47A6A1D2517");
 
-            entity.Property(e => e.BookingServiceId).HasColumnName("BookingServiceID");
+            entity.Property(e => e.BookingDetailId).HasColumnName("BookingDetailID");
             entity.Property(e => e.BookingId).HasColumnName("BookingID");
-            entity.Property(e => e.Quantity).HasDefaultValue(1);
-            entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
-            entity.Property(e => e.Status)
-                .HasMaxLength(20)
-                .HasDefaultValue("Pending");
+            entity.Property(e => e.Price).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.RoomNumber).HasMaxLength(10);
+            entity.Property(e => e.RoomTypeId).HasColumnName("RoomTypeID");
 
-            entity.HasOne(d => d.Booking).WithMany(p => p.BookingServices)
+            entity.HasOne(d => d.Booking).WithMany(p => p.BookingDetails)
                 .HasForeignKey(d => d.BookingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_BookingServices_Bookings");
+                .HasConstraintName("FK_BookingDetails_Bookings");
 
-            entity.HasOne(d => d.Service).WithMany(p => p.BookingServices)
+            entity.HasOne(d => d.RoomNumberNavigation).WithMany(p => p.BookingDetails)
+                .HasPrincipalKey(p => p.RoomNumber)
+                .HasForeignKey(d => d.RoomNumber)
+                .HasConstraintName("FK_BookingDetails_Rooms");
+
+            entity.HasOne(d => d.RoomType).WithMany(p => p.BookingDetails)
+                .HasForeignKey(d => d.RoomTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BookingDetails_RoomTypes");
+        });
+
+        modelBuilder.Entity<BookingDetailService>(entity =>
+        {
+            entity.HasKey(e => e.BookingDetailServiceId).HasName("PK__BookingD__6CA1399027122DFA");
+
+            entity.Property(e => e.BookingDetailServiceId).HasColumnName("BookingDetailServiceID");
+            entity.Property(e => e.BookingDetailId).HasColumnName("BookingDetailID");
+            entity.Property(e => e.Price).HasColumnType("decimal(12, 2)");
+            entity.Property(e => e.Quantity).HasDefaultValue(1);
+            entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
+
+            entity.HasOne(d => d.BookingDetail).WithMany(p => p.BookingDetailServices)
+                .HasForeignKey(d => d.BookingDetailId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_BookingDetailServices_BookingDetails");
+
+            entity.HasOne(d => d.Service).WithMany(p => p.BookingDetailServices)
                 .HasForeignKey(d => d.ServiceId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_BookingServices_Services");
+                .HasConstraintName("FK_BookingDetailServices_Services");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64B84CCF35B1");
+            entity.HasKey(e => e.CustomerId).HasName("PK__Customer__A4AE64B8F8075A66");
 
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
             entity.Property(e => e.Email).HasMaxLength(100);
@@ -100,9 +113,9 @@ public partial class HotelContext : DbContext
 
         modelBuilder.Entity<Room>(entity =>
         {
-            entity.HasKey(e => e.RoomId).HasName("PK__Rooms__32863919A979BFF1");
+            entity.HasKey(e => e.RoomId).HasName("PK__Rooms__32863919BBCDB9AF");
 
-            entity.HasIndex(e => e.RoomNumber, "UQ_RoomNumber").IsUnique();
+            entity.HasIndex(e => e.RoomNumber, "UQ_Rooms_RoomNumber").IsUnique();
 
             entity.Property(e => e.RoomId).HasColumnName("RoomID");
             entity.Property(e => e.RoomNumber).HasMaxLength(10);
@@ -119,7 +132,7 @@ public partial class HotelContext : DbContext
 
         modelBuilder.Entity<RoomType>(entity =>
         {
-            entity.HasKey(e => e.RoomTypeId).HasName("PK__RoomType__BCC89611E9B180C8");
+            entity.HasKey(e => e.RoomTypeId).HasName("PK__RoomType__BCC896110A0BEC54");
 
             entity.Property(e => e.RoomTypeId).HasColumnName("RoomTypeID");
             entity.Property(e => e.BasePrice).HasColumnType("decimal(10, 2)");
@@ -131,7 +144,7 @@ public partial class HotelContext : DbContext
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.ServiceId).HasName("PK__Services__C51BB0EAA41EE700");
+            entity.HasKey(e => e.ServiceId).HasName("PK__Services__C51BB0EA88993405");
 
             entity.Property(e => e.ServiceId).HasColumnName("ServiceID");
             entity.Property(e => e.ServiceName).HasMaxLength(50);
@@ -143,11 +156,11 @@ public partial class HotelContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC8DB28D9B");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACBB763B28");
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.FullName).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(255);
-            entity.Property(e => e.Role).HasMaxLength(20);
             entity.Property(e => e.UserName).HasMaxLength(50);
         });
 

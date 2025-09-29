@@ -31,7 +31,7 @@ const Booking = () => {
   const fetchRooms = async () => {
     setLoading(true)
     try {
-      const res = await axios.get(`https://localhost:7182/RoomType/available`, {
+      const res = await axios.get(`https://localhost:7182/api/RoomType/available`, {
         params: {
           fromDate: checkIn,
           toDate: checkOut

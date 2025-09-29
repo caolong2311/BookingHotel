@@ -11,6 +11,7 @@ import ScrollToTop from './components/ScrollToTop';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Order from './pages/order/order';
+import Payment from './pages/Payment/Payment';
 function App() {
 
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/lien-he" element={<Contact />} />
         <Route path="/:roomName" element={<RoomDetail />} />
         <Route path="/order" element = {<Order/>}/>
+        <Route path="/payment" element = {<Payment/>}/>
       </Routes>
       <Footer></Footer>
     </>

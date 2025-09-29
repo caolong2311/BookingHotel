@@ -1,7 +1,8 @@
 import './order.css'
 import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { assets } from '../../assets/assets'
+import axios from 'axios'
 
 const Order = () => {
   const { state } = useLocation()
@@ -12,7 +13,7 @@ const Order = () => {
     checkIn,
     checkOut
   } = state || {}
-
+  const navigate = useNavigate();
   const [customer, setCustomer] = useState({
     name: "",
     phone: "",
@@ -24,15 +25,45 @@ const Order = () => {
     setCustomer((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault() 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     if (!customer.name || !customer.phone || !customer.email) {
-      alert("Vui lòng nhập đầy đủ thông tin khách hàng!")
-      return
+      alert("Vui lòng nhập đầy đủ thông tin khách hàng!");
+      return;
     }
-    alert("Thanh toán thành công!")
-  }
+    const bookingData = {
+      CustomerName: customer.name,
+      PhoneNumber: customer.phone,
+      Email: customer.email,
+      CheckInDate: checkIn,
+      CheckOutDate: checkOut,
+      TotalPrice: totalPrice,
+      Details: selectedRoomDetails.map((room) => ({
+        RoomTypeId: room.id,
+        Quantity: room.quantity,
+        Price: room.price
+      }))
+    };
+
+    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+    try {
+      const res = await axios.post("https://localhost:7182/api/booking/create-payment", {
+        amount: totalPrice,
+      });
+
+      if (res.data.success && res.data.payUrl) {
+        window.location.href = res.data.payUrl;
+      } else {
+        alert("Không tạo được đơn thanh toán MoMo!");
+        console.error("MoMo error:", res.data);
+      }
+    } catch (err) {
+      console.error("Lỗi gọi API MoMo:", err);
+      alert("Có lỗi khi tạo đơn MoMo.");
+    }
+
+  };
 
   return (
     <div>
@@ -103,7 +134,7 @@ const Order = () => {
               onChange={handleChange}
               placeholder="Nhập số điện thoại"
               required
-              pattern="[0-9]{10}" 
+              pattern="[0-9]{10}"
               title="Vui lòng nhập số điện thoại hợp lệ"
             />
 

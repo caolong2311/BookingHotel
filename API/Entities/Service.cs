@@ -15,5 +15,5 @@ public partial class Service
 
     public string? Status { get; set; }
 
-    public virtual ICollection<BookingService> BookingServices { get; set; } = new List<BookingService>();
+    public virtual ICollection<BookingDetailService> BookingDetailServices { get; set; } = new List<BookingDetailService>();
 }

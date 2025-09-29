@@ -169,3 +169,4 @@ D:\Projects\BookingHotel\API\obj\Debug\net8.0\refint\API.dll
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.pdb
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 D:\Projects\BookingHotel\API\obj\Debug\net8.0\ref\API.dll
+D:\Projects\BookingHotel\API\bin\Debug\net8.0\Newtonsoft.Json.dll

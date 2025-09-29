@@ -1,8 +1,40 @@
 [
   {
+    "ContainingType": "API.Controllers.BookingController",
+    "Method": "Booking",
+    "RelativePath": "api/Booking",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bookingDto",
+        "Type": "API.DTO.BookingDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BookingController",
+    "Method": "CreatePayment",
+    "RelativePath": "api/Booking/create-payment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "API.DTO.PaymentDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API.Controllers.RoomTypeController",
     "Method": "GetAll",
-    "RelativePath": "RoomType",
+    "RelativePath": "api/RoomType",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -22,7 +54,7 @@
   {
     "ContainingType": "API.Controllers.RoomTypeController",
     "Method": "GetAvailable",
-    "RelativePath": "RoomType/available",
+    "RelativePath": "api/RoomType/available",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

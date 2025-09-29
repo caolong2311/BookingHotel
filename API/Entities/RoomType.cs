@@ -23,9 +23,8 @@ public partial class RoomType
     public string? Description { get; set; }
 
     public string? Image { get; set; }
-
     [JsonIgnore]
-    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public virtual ICollection<BookingDetail> BookingDetails { get; set; } = new List<BookingDetail>();
     [JsonIgnore]
     public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
 }

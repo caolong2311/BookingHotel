@@ -22,6 +22,10 @@ import list2 from "./list2.jpg"
 import list3 from "./list3.jpg"
 import list4 from "./list4.jpg"
 import list5 from "./list5.jpg"
+
+import icon from "./icon.png"
+import icon2 from "./icon2.jpg"
+import icon3 from "./icon3.png"
 export const assets = {
     khachsan,
     khachsan2,
@@ -43,5 +47,8 @@ export const assets = {
     list2,
     list3,
     list4,
-    list5
+    list5,
+    icon,
+    icon2,
+    icon3
 };
