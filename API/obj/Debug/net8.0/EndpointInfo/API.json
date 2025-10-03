@@ -67,6 +67,53 @@
         }
       }
     },
+    "/api/Booking/check-in": {
+      "get": {
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/RoomType": {
       "get": {
         "tags": [
@@ -236,12 +283,51 @@
         },
         "additionalProperties": false
       },
+      "CheckInDTO": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "typeRoom": {
+            "type": "string",
+            "nullable": true
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "PaymentDTO": {
         "type": "object",
         "properties": {
           "amount": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomDTO": {
+        "type": "object",
+        "properties": {
+          "roomNumber": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -14,10 +14,12 @@ namespace API.Repository
             _context = context;
             this.dbSet = _context.Set<T>();
         }
+
         public void Add(T entity)
         {
             dbSet.Add(entity);
         }
+
 
         public T Get(Expression<Func<T, bool>> filter)
         {

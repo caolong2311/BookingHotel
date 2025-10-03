@@ -3,8 +3,10 @@ using API.Entities;
 using API.Repository.IRepository;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -198,5 +200,66 @@ namespace API.Controllers
                 return StatusCode(500, new { Message = "Đặt phòng thất bại", Error = ex.Message });
             }
         }
+        [HttpGet("check-in")]
+        public List<CheckInDTO> CheckIn([FromQuery] string phone)
+        {
+     
+            var result = from c in _unitOfWork.Customer.GetAll()
+                         join b in _unitOfWork.Booking.GetAll() on c.CustomerId equals b.CustomerId
+                         where c.PhoneNumber == phone
+                               && b.Status == "Đặt phòng"
+                               && DateTime.Now >= b.CheckInDate
+                               && DateTime.Now <= b.CheckOutDate
+                         select new
+                         {
+                             b.BookingId,
+                             c.FullName,
+                             b.CheckInDate,
+                             b.CheckOutDate
+                         };
+
+            List<CheckInDTO> checkInList = new List<CheckInDTO>();
+
+         
+            foreach (var booking in result)
+            {
+             
+                var typeRooms = from bd in _unitOfWork.BookingDetail.GetAll()
+                                join rt in _unitOfWork.RoomTypes.GetAll() on bd.RoomTypeId equals rt.RoomTypeId
+                                where bd.BookingId == booking.BookingId
+                                && bd.RoomNumber == null
+                                select new
+                                {
+                                    bd.RoomTypeId,
+                                    rt.TypeName
+                                };
+
+             
+                foreach (var item in typeRooms)
+                {
+                    var room = from r in _unitOfWork.Room.GetAll()
+                               where r.RoomTypeId == item.RoomTypeId
+                                     && r.Status == "Còn phòng"
+                               select new RoomDTO
+                               {
+                                   RoomNumber = r.RoomNumber
+                               };
+
+                    CheckInDTO checkIn = new CheckInDTO
+                    {
+                        FullName = booking.FullName,
+                        CheckInDate = booking.CheckInDate,
+                        CheckOutDate = booking.CheckOutDate,
+                        TypeRoom = item.TypeName,
+                        Rooms = room.ToList()
+                    };
+
+                    checkInList.Add(checkIn);
+                }
+            }
+
+            return checkInList;
+        }
+
     }
 }

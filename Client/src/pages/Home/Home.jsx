@@ -14,7 +14,7 @@ const Home = () => {
     const settings = {
         dots: false,            
         infinite: true,       
-        speed: 2000,            
+        speed: 2500,            
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,         

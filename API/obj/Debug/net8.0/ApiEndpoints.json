@@ -17,6 +17,32 @@
   },
   {
     "ContainingType": "API.Controllers.BookingController",
+    "Method": "CheckIn",
+    "RelativePath": "api/Booking/check-in",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "phone",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[API.DTO.CheckInDTO, API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "API.Controllers.BookingController",
     "Method": "CreatePayment",
     "RelativePath": "api/Booking/create-payment",
     "HttpMethod": "POST",

@@ -6,10 +6,10 @@ using System;
 
 namespace API.Repository
 {
-    public class RoomTypeCategory : Repository<RoomType>, IRoomTypeRepository
+    public class RoomTypeRepository : Repository<RoomType>, IRoomTypeRepository
     {
         private readonly HotelContext _context;
-        public RoomTypeCategory(HotelContext context) : base(context)
+        public RoomTypeRepository(HotelContext context) : base(context)
         {
             _context = context;
         }

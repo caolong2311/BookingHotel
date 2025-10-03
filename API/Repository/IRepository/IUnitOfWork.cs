@@ -7,6 +7,8 @@
 
         IBookingRepository Booking { get; set; }
         IBookingDetailRepository BookingDetail { get; set; }
+
+        IRoomRepository Room { get; set; }
         int Save();
         Task ExecuteInTransactionAsync(Func<Task> action);
     }
