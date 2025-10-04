@@ -2,7 +2,6 @@
 {
     public class RoomDTO
     {
-
         public string RoomNumber { get; set; }
 
     }

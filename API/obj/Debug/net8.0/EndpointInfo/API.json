@@ -87,9 +87,48 @@
             "content": {
               "text/plain": {
                 "schema": {
+                  "$ref": "#/components/schemas/CheckInDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Booking/detail-booking": {
+      "get": {
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "bookingID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CheckInDTO"
+                    "$ref": "#/components/schemas/RoomDetailDTO"
                   }
                 }
               },
@@ -97,7 +136,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CheckInDTO"
+                    "$ref": "#/components/schemas/RoomDetailDTO"
                   }
                 }
               },
@@ -105,11 +144,61 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CheckInDTO"
+                    "$ref": "#/components/schemas/RoomDetailDTO"
                   }
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/Booking/update-room": {
+      "put": {
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "name": "bookingID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UpdateRoomDTO"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UpdateRoomDTO"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/UpdateRoomDTO"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -290,6 +379,23 @@
             "type": "string",
             "nullable": true
           },
+          "customerBookingDTOs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerBookingDTO"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomerBookingDTO": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "checkInDate": {
             "type": "string",
             "format": "date-time"
@@ -297,17 +403,6 @@
           "checkOutDate": {
             "type": "string",
             "format": "date-time"
-          },
-          "typeRoom": {
-            "type": "string",
-            "nullable": true
-          },
-          "rooms": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/RoomDTO"
-            },
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -327,6 +422,31 @@
         "properties": {
           "roomNumber": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoomDetailDTO": {
+        "type": "object",
+        "properties": {
+          "roomTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "typeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomDTOs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomDTO"
+            },
             "nullable": true
           }
         },
@@ -369,6 +489,23 @@
           },
           "image": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateRoomDTO": {
+        "type": "object",
+        "properties": {
+          "roomTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roomDTOs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoomDTO"
+            },
             "nullable": true
           }
         },

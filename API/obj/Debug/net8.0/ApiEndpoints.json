@@ -31,7 +31,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[API.DTO.CheckInDTO, API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "API.DTO.CheckInDTO",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -52,6 +52,53 @@
       {
         "Name": "dto",
         "Type": "API.DTO.PaymentDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BookingController",
+    "Method": "DetailBooking",
+    "RelativePath": "api/Booking/detail-booking",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bookingID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[API.DTO.RoomDetailDTO, API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "API.Controllers.BookingController",
+    "Method": "UpdateRoom",
+    "RelativePath": "api/Booking/update-room",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bookingID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "dto",
+        "Type": "System.Collections.Generic.List\u00601[[API.DTO.UpdateRoomDTO, API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "IsRequired": true
       }
     ],

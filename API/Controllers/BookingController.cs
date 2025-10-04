@@ -201,64 +201,161 @@ namespace API.Controllers
             }
         }
         [HttpGet("check-in")]
-        public List<CheckInDTO> CheckIn([FromQuery] string phone)
+        public CheckInDTO CheckIn([FromQuery] string phone)
         {
-     
-            var result = from c in _unitOfWork.Customer.GetAll()
-                         join b in _unitOfWork.Booking.GetAll() on c.CustomerId equals b.CustomerId
-                         where c.PhoneNumber == phone
+            var customer = _unitOfWork.Customer.GetAll().Where(p => p.PhoneNumber == phone).FirstOrDefault();
+            var booking = from c in _unitOfWork.Customer.GetAll()
+                          join b in _unitOfWork.Booking.GetAll()
+                              on c.CustomerId equals b.CustomerId
+                          where c.CustomerId == customer.CustomerId
                                && b.Status == "Đặt phòng"
                                && DateTime.Now >= b.CheckInDate
-                               && DateTime.Now <= b.CheckOutDate
-                         select new
+                               && DateTime.Now <= b.CheckOutDate.AddDays(1)
+                         select new CustomerBookingDTO
                          {
-                             b.BookingId,
-                             c.FullName,
-                             b.CheckInDate,
-                             b.CheckOutDate
+                             BookingId = b.BookingId,
+                             CheckInDate = b.CheckInDate,
+                             CheckOutDate = b.CheckOutDate
                          };
-
-            List<CheckInDTO> checkInList = new List<CheckInDTO>();
-
-         
-            foreach (var booking in result)
+            CheckInDTO checkInDTO = new CheckInDTO
             {
-             
-                var typeRooms = from bd in _unitOfWork.BookingDetail.GetAll()
-                                join rt in _unitOfWork.RoomTypes.GetAll() on bd.RoomTypeId equals rt.RoomTypeId
-                                where bd.BookingId == booking.BookingId
-                                && bd.RoomNumber == null
-                                select new
-                                {
-                                    bd.RoomTypeId,
-                                    rt.TypeName
-                                };
+                FullName = customer.FullName,
+                customerBookingDTOs = booking.ToList()
+            };
+            return checkInDTO;
+            //var result = from c in _unitOfWork.Customer.GetAll()
+            //             join b in _unitOfWork.Booking.GetAll() on c.CustomerId equals b.CustomerId
+            //             where c.PhoneNumber == phone
+            //                   && b.Status == "Đặt phòng"
+            //                   && DateTime.Now >= b.CheckInDate
+            //                   && DateTime.Now <= b.CheckOutDate
+            //             select new
+            //             {
+            //                 b.BookingId,
+            //                 c.FullName,
+            //                 b.CheckInDate,
+            //                 b.CheckOutDate
+            //             };
 
-             
-                foreach (var item in typeRooms)
+            //List<CheckInDTO> checkInList = new List<CheckInDTO>();
+
+
+            //foreach (var booking in result)
+            //{
+
+            //    var typeRooms = from bd in _unitOfWork.BookingDetail.GetAll()
+            //                    join rt in _unitOfWork.RoomTypes.GetAll() on bd.RoomTypeId equals rt.RoomTypeId
+            //                    where bd.BookingId == booking.BookingId
+            //                    && bd.RoomNumber == null
+            //                    select new
+            //                    {   bd.BookingDetailId,
+            //                        bd.RoomTypeId,
+            //                        rt.TypeName
+            //                    };
+
+
+            //    foreach (var item in typeRooms)
+            //    {
+            //        var room = from r in _unitOfWork.Room.GetAll()
+            //                   where r.RoomTypeId == item.RoomTypeId
+            //                         && r.Status == "Còn phòng"
+            //                   select new RoomDTO
+            //                   {
+            //                       RoomNumber = r.RoomNumber
+            //                   };
+
+            //        CheckInDTO checkIn = new CheckInDTO
+            //        {
+            //            FullName = booking.FullName,
+            //            CheckInDate = booking.CheckInDate,
+            //            CheckOutDate = booking.CheckOutDate,
+            //            BookingDetailId = item.BookingDetailId,
+            //            TypeRoom = item.TypeName,
+            //            Rooms = room.ToList()
+            //        };
+
+            //        checkInList.Add(checkIn);
+            //    }
+            //}
+
+            //return checkInList;
+        }
+        [HttpGet("detail-booking")]
+        public List<RoomDetailDTO> DetailBooking([FromQuery] int bookingID)
+        {
+            var result = (from b in _unitOfWork.BookingDetail.GetAll()
+                          join t in _unitOfWork.RoomTypes.GetAll()
+                              on b.RoomTypeId equals t.RoomTypeId
+                          where b.BookingId == bookingID && b.RoomNumber == null
+                          group b by new { b.RoomTypeId, t.TypeName } into g
+                          select new
+                          {
+                              RoomTypeId = g.Key.RoomTypeId,
+                              TypeName = g.Key.TypeName,
+                              Quantity = g.Count()
+                          }).ToList();
+            List<RoomDetailDTO> roomDetailDTOs = new List<RoomDetailDTO>();
+            foreach(var b in result)
+            {
+                var room = from r in _unitOfWork.Room.GetAll()
+                           where r.RoomTypeId == b.RoomTypeId
+                             && r.Status == "Còn phòng"
+                           select new RoomDTO
+                           {
+                               RoomNumber = r.RoomNumber
+                           };
+                RoomDetailDTO roomDetailDTO = new RoomDetailDTO
                 {
-                    var room = from r in _unitOfWork.Room.GetAll()
-                               where r.RoomTypeId == item.RoomTypeId
-                                     && r.Status == "Còn phòng"
-                               select new RoomDTO
-                               {
-                                   RoomNumber = r.RoomNumber
-                               };
+                    RoomTypeId = b.RoomTypeId,
+                    TypeName = b.TypeName,
+                    Quantity = b.Quantity,
+                    roomDTOs = room.ToList()
+                };
+                roomDetailDTOs.Add(roomDetailDTO);
+            }
+            return roomDetailDTOs;
 
-                    CheckInDTO checkIn = new CheckInDTO
-                    {
-                        FullName = booking.FullName,
-                        CheckInDate = booking.CheckInDate,
-                        CheckOutDate = booking.CheckOutDate,
-                        TypeRoom = item.TypeName,
-                        Rooms = room.ToList()
-                    };
+        }
+        [HttpPut("update-room")]
+        public IActionResult UpdateRoom(
+            [FromQuery] int bookingID,
+            [FromBody] List<UpdateRoomDTO> dto)
+        {
+            foreach(var b in dto)
+            {
+               var bookingdetail = _unitOfWork.BookingDetail.GetAll()
+                                  .Where(bd => bd.BookingId == bookingID && bd.RoomTypeId == b.RoomTypeId).ToList();
 
-                    checkInList.Add(checkIn);
+               for(var i = 0; i < bookingdetail.Count; i++)
+                {
+                    bookingdetail[i].RoomNumber = b.roomDTOs[i].RoomNumber;
+                    _unitOfWork.BookingDetail.Update(bookingdetail[i]);
+                    var room = _unitOfWork.Room.GetAll()
+                          .FirstOrDefault(r => r.RoomNumber == b.roomDTOs[i].RoomNumber);
+                    room.Status = "Hết phòng";
+                    _unitOfWork.Room.Update(room);
+                    _unitOfWork.Save();
                 }
             }
+            return Ok("Cập nhật thành công");
 
-            return checkInList;
+            //if (bookingDetail == null)
+            //    return NotFound("BookingDetail không tồn tại");
+
+            //bookingDetail.RoomNumber = dto.RoomNumber;
+            //_unitOfWork.BookingDetail.Update(bookingDetail);
+
+            //var room = _unitOfWork.Room.GetAll()
+            //              .FirstOrDefault(r => r.RoomNumber == dto.RoomNumber);
+            //if (room == null)
+            //    return NotFound("Room không tồn tại");
+
+            //room.Status = "Hết phòng";
+            //_unitOfWork.Room.Update(room);
+
+            //_unitOfWork.Save();
+
+            //return Ok("Cập nhật thành công");
         }
 
     }
