@@ -205,12 +205,13 @@ namespace API.Controllers
         {
             var customer = _unitOfWork.Customer.GetAll().Where(p => p.PhoneNumber == phone).FirstOrDefault();
             var booking = from c in _unitOfWork.Customer.GetAll()
-                          join b in _unitOfWork.Booking.GetAll()
+                          join b in _unitOfWork.Booking.GetAll()                         
                               on c.CustomerId equals b.CustomerId
                           where c.CustomerId == customer.CustomerId
                                && b.Status == "Đặt phòng"
                                && DateTime.Now >= b.CheckInDate
                                && DateTime.Now <= b.CheckOutDate.AddDays(1)
+                               && b.Status != "Đã đặt phòng"
                          select new CustomerBookingDTO
                          {
                              BookingId = b.BookingId,
@@ -317,46 +318,56 @@ namespace API.Controllers
 
         }
         [HttpPut("update-room")]
-        public IActionResult UpdateRoom(
-            [FromQuery] int bookingID,
-            [FromBody] List<UpdateRoomDTO> dto)
+        public async Task<IActionResult> UpdateRoom(
+    [FromQuery] int bookingID,
+    [FromBody] List<UpdateRoomDTO> dto)
         {
-            foreach(var b in dto)
+            try
             {
-               var bookingdetail = _unitOfWork.BookingDetail.GetAll()
-                                  .Where(bd => bd.BookingId == bookingID && bd.RoomTypeId == b.RoomTypeId).ToList();
-
-               for(var i = 0; i < bookingdetail.Count; i++)
+                await _unitOfWork.ExecuteInTransactionAsync(async () =>
                 {
-                    bookingdetail[i].RoomNumber = b.roomDTOs[i].RoomNumber;
-                    _unitOfWork.BookingDetail.Update(bookingdetail[i]);
-                    var room = _unitOfWork.Room.GetAll()
-                          .FirstOrDefault(r => r.RoomNumber == b.roomDTOs[i].RoomNumber);
-                    room.Status = "Hết phòng";
-                    _unitOfWork.Room.Update(room);
+                    var booking = _unitOfWork.Booking.GetAll()
+                        .FirstOrDefault(b => b.BookingId == bookingID);
+
+                    if (booking == null)
+                        throw new Exception($"Không tìm thấy booking ID = {bookingID}");
+
+                    booking.Status = "Đã đặt phòng";
+                    _unitOfWork.Booking.Update(booking);
+
+                    foreach (var b in dto)
+                    {
+                        var bookingDetails = _unitOfWork.BookingDetail.GetAll()
+                            .Where(bd => bd.BookingId == bookingID && bd.RoomTypeId == b.RoomTypeId)
+                            .ToList();
+
+                        for (var i = 0; i < bookingDetails.Count; i++)
+                        {
+                            bookingDetails[i].RoomNumber = b.roomDTOs[i].RoomNumber;
+                            _unitOfWork.BookingDetail.Update(bookingDetails[i]);
+
+                            var room = _unitOfWork.Room.GetAll()
+                                .FirstOrDefault(r => r.RoomNumber == b.roomDTOs[i].RoomNumber);
+
+                            if (room == null)
+                                throw new Exception($"Không tìm thấy phòng {b.roomDTOs[i].RoomNumber}");
+
+                            room.Status = "Hết phòng";
+                            _unitOfWork.Room.Update(room);
+                        }
+                    }
+
                     _unitOfWork.Save();
-                }
+                });
+
+                return Ok("Cập nhật thành công");
             }
-            return Ok("Cập nhật thành công");
-
-            //if (bookingDetail == null)
-            //    return NotFound("BookingDetail không tồn tại");
-
-            //bookingDetail.RoomNumber = dto.RoomNumber;
-            //_unitOfWork.BookingDetail.Update(bookingDetail);
-
-            //var room = _unitOfWork.Room.GetAll()
-            //              .FirstOrDefault(r => r.RoomNumber == dto.RoomNumber);
-            //if (room == null)
-            //    return NotFound("Room không tồn tại");
-
-            //room.Status = "Hết phòng";
-            //_unitOfWork.Room.Update(room);
-
-            //_unitOfWork.Save();
-
-            //return Ok("Cập nhật thành công");
+            catch (Exception ex)
+            {
+                return BadRequest($"Lỗi khi cập nhật: {ex.Message}");
+            }
         }
+
 
     }
 }

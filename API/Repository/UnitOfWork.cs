@@ -11,6 +11,9 @@ namespace API.Repository
         public IBookingRepository Booking { get; set; }
         public IBookingDetailRepository BookingDetail { get; set; }
         public IRoomRepository Room { get; set; }
+        public IServiceDetailRepository ServiceDetail { get; set; }
+
+        public IServiceRepository Service { get; set; }
 
         private readonly HotelContext _context;
 
@@ -22,6 +25,8 @@ namespace API.Repository
             Booking = new BookingRepository(_context);
             BookingDetail = new BookingDetailRepository(_context);
             Room = new RoomRepository(_context);
+            ServiceDetail = new ServiceDetailRepository(_context);
+            Service = new ServiceRepository(_context);
         }
 
         public  int Save()

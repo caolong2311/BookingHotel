@@ -1,84 +1,45 @@
 import './CheckIn.css'
 import React, { useState } from 'react'
-
-// JSON mock data (thêm quantity)
-const bookingData = [
-  {
-    fullName: "Long",
-    checkInDate: "2025-10-04T00:00:00",
-    checkOutDate: "2025-10-05T00:00:00",
-    bookingDetailId: 13,
-    typeRoom: "Superior",
-    quantity: 1,
-    rooms: [{ roomNumber: "202" }, { roomNumber: "203" }, { roomNumber: "204" }]
-  },
-  {
-    fullName: "Long",
-    checkInDate: "2025-10-04T00:00:00",
-    checkOutDate: "2025-10-05T00:00:00",
-    bookingDetailId: 14,
-    typeRoom: "Deluxe",
-    quantity: 2,
-    rooms: [{ roomNumber: "301" }, { roomNumber: "302" }, { roomNumber: "303" }]
-  },
-  {
-    fullName: "Long",
-    checkInDate: "2025-10-03T00:00:00",
-    checkOutDate: "2025-10-06T00:00:00",
-    bookingDetailId: 15,
-    typeRoom: "Superior",
-    quantity: 1,
-    rooms: [{ roomNumber: "205" }, { roomNumber: "206" }]
-  },
-  {
-    fullName: "Long",
-    checkInDate: "2025-10-03T00:00:00",
-    checkOutDate: "2025-10-06T00:00:00",
-    bookingDetailId: 16,
-    typeRoom: "Executive",
-    quantity: 3,
-    rooms: [{ roomNumber: "401" }, { roomNumber: "402" }, { roomNumber: "403" }, { roomNumber: "404" }]
-  }
-]
-
-// Gom dữ liệu theo ngày
-const groupByDate = (data) => {
-  const grouped = {}
-
-  data.forEach(item => {
-    const key = `${item.checkInDate}_${item.checkOutDate}`
-
-    if (!grouped[key]) {
-      grouped[key] = {
-        fullName: item.fullName,
-        checkInDate: item.checkInDate.split('T')[0],
-        checkOutDate: item.checkOutDate.split('T')[0],
-        bookings: []
-      }
-    }
-
-    grouped[key].bookings.push({
-      typeRoom: item.typeRoom,
-      quantity: item.quantity,
-      rooms: item.rooms.map(r => r.roomNumber)
-    })
-  })
-
-  return Object.values(grouped)
-}
+import axios from 'axios'
 
 const CheckIn = () => {
   const [phone, setPhone] = useState('')
   const [customer, setCustomer] = useState(null)
   const [expanded, setExpanded] = useState({})
   const [selectedRooms, setSelectedRooms] = useState({})
+  const [loading, setLoading] = useState(false)
 
-  const handleSearch = () => {
-    if (phone === '0901234567') {
-      const grouped = groupByDate(bookingData)
-      setCustomer({ fullName: "Long", bookingsByDate: grouped })
-    } else {
-      setCustomer({ notFound: true })
+  const handleSearch = async () => {
+    if (!phone.trim()) return alert('Vui lòng nhập số điện thoại')
+
+    setLoading(true)
+    setCustomer(null)
+
+    try {
+      const res = await axios.get(`https://localhost:7182/api/booking/check-in`, {
+        params: { phone },
+      })
+
+      const data = res.data
+
+      if (!data || !data.customerBookingDTOs || data.customerBookingDTOs.length === 0) {
+        setCustomer({ notFound: true })
+      } else {
+        setCustomer({
+          fullName: data.fullName,
+          bookingsByDate: data.customerBookingDTOs.map(b => ({
+            bookingId: b.bookingId,
+            checkInDate: b.checkInDate.split('T')[0],
+            checkOutDate: b.checkOutDate.split('T')[0],
+            details: null,
+          })),
+        })
+      }
+    } catch (err) {
+      console.error('Lỗi khi gọi API check-in:', err)
+      alert('Không thể lấy dữ liệu khách hàng')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -89,25 +50,89 @@ const CheckIn = () => {
     setSelectedRooms({})
   }
 
-  // toggle room với quantity limit
   const toggleRoom = (dateKey, typeRoom, room, quantity) => {
     const key = `${dateKey}_${typeRoom}`
     setSelectedRooms(prev => {
       const current = prev[key] || []
-
-      // nếu đã chọn rồi thì bỏ chọn
       if (current.includes(room)) {
         return { ...prev, [key]: current.filter(r => r !== room) }
       }
-
-      // nếu chưa đủ số lượng thì thêm
       if (current.length < quantity) {
         return { ...prev, [key]: [...current, room] }
       }
-
       return prev
     })
   }
+
+  const handleToggleDetail = async (dateKey, bookingId) => {
+    setExpanded(prev => ({ ...prev, [dateKey]: !prev[dateKey] }))
+
+    if (expanded[dateKey] || !customer) return
+
+    try {
+      const res = await axios.get(`https://localhost:7182/api/booking/detail-booking`, {
+        params: { bookingID: bookingId },
+      })
+      const data = res.data
+
+      setCustomer(prev => ({
+        ...prev,
+        bookingsByDate: prev.bookingsByDate.map(b =>
+          b.bookingId === bookingId
+            ? {
+                ...b,
+                details: data.map(d => ({
+                  roomTypeId: d.roomTypeId,
+                  typeRoom: d.typeName,
+                  quantity: d.quantity,
+                  rooms: d.roomDTOs.map(r => r.roomNumber),
+                })),
+              }
+            : b
+        ),
+      }))
+    } catch (err) {
+      console.error('Lỗi khi gọi API detail-booking:', err)
+      alert('Không thể tải chi tiết đặt phòng')
+    }
+  }
+
+  const isBookingReady = (day) => {
+    if (!day.details) return false
+    return day.details.every((b) => {
+      const key = `${day.checkInDate}_${day.checkOutDate}_${b.typeRoom}`
+      const selected = selectedRooms[key] || []
+      return selected.length === b.quantity
+    })
+  }
+
+  const handleBook = async (day) => {
+  try {
+    const body = day.details.map((b) => {
+      const key = `${day.checkInDate}_${day.checkOutDate}_${b.typeRoom}`
+      const selected = selectedRooms[key] || []
+      return {
+        RoomTypeId: b.roomTypeId,
+        roomDTOs: selected.map(r => ({ RoomNumber: r }))
+      }
+    })
+
+    await axios.put(
+      `https://localhost:7182/api/booking/update-room`,
+      body,
+      { params: { bookingID: day.bookingId } }
+    )
+
+    alert('✅ Đặt phòng thành công!')
+
+    handleReset()
+
+  } catch (err) {
+    console.error('Lỗi khi đặt phòng:', err)
+    alert('❌ Không thể đặt phòng. Vui lòng thử lại.')
+  }
+}
+
 
   return (
     <div className="checkin-wrapper">
@@ -118,8 +143,10 @@ const CheckIn = () => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
         />
-        <button className="btn btn-search" onClick={handleSearch}>Tìm kiếm</button>
-        <button className="btn btn-reset" onClick={handleReset}>Đặt lại</button>
+        <button className="btn-checkin btn-search" onClick={handleSearch} disabled={loading}>
+          {loading ? 'Đang tìm...' : 'Tìm kiếm'}
+        </button>
+        <button className="btn-checkin btn-reset" onClick={handleReset}>Đặt lại</button>
       </div>
 
       <div className="checkin-result">
@@ -136,40 +163,58 @@ const CheckIn = () => {
                 return (
                   <div key={idx} className="booking-card">
                     <div className="booking-summary">
-                      <p><strong>{day.checkInDate}</strong> → <strong>{day.checkOutDate}</strong></p>
-                      <button 
+                      <p>
+                        <strong>{day.checkInDate}</strong> → <strong>{day.checkOutDate}</strong>
+                      </p>
+                      <button
                         className="btn btn-detail"
-                        onClick={() => setExpanded(prev => ({ ...prev, [dateKey]: !isOpen }))}
+                        onClick={() => handleToggleDetail(dateKey, day.bookingId)}
                       >
-                        {isOpen ? "Ẩn chi tiết" : "Chi tiết"}
+                        {isOpen ? 'Ẩn chi tiết' : 'Chi tiết'}
                       </button>
                     </div>
 
                     {isOpen && (
                       <div className="booking-detail">
-                        {day.bookings.map((b, i) => {
-                          const key = `${dateKey}_${b.typeRoom}`
-                          const selected = selectedRooms[key] || []
-                          return (
-                            <div key={i} className="room-type">
-                              <p>Loại phòng: <b>{b.typeRoom}</b> (Số lượng: {b.quantity})</p>
-                              <div className="room-list">
-                                {b.rooms.map(r => (
-                                  <button
-                                    key={r}
-                                    className={`room-btn ${selected.includes(r) ? 'selected' : ''}`}
-                                    onClick={() => toggleRoom(dateKey, b.typeRoom, r, b.quantity)}
-                                  >
-                                    {r}
-                                  </button>
-                                ))}
-                              </div>
-                              <p className="selected-info">
-                                ✅ Đã chọn: {selected.length}/{b.quantity}
-                              </p>
-                            </div>
-                          )
-                        })}
+                        {day.details ? (
+                          <>
+                            {day.details.map((b, i) => {
+                              const key = `${dateKey}_${b.typeRoom}`
+                              const selected = selectedRooms[key] || []
+                              return (
+                                <div key={i} className="room-type">
+                                  <p>
+                                    Loại phòng: <b>{b.typeRoom}</b> (Số lượng: {b.quantity})
+                                  </p>
+                                  <div className="room-list">
+                                    {b.rooms.map(r => (
+                                      <button
+                                        key={r}
+                                        className={`room-btn ${selected.includes(r) ? 'selected' : ''}`}
+                                        onClick={() => toggleRoom(dateKey, b.typeRoom, r, b.quantity)}
+                                      >
+                                        {r}
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <p className="selected-info">
+                                    ✅ Đã chọn: {selected.length}/{b.quantity}
+                                  </p>
+                                </div>
+                              )
+                            })}
+
+                            <button
+                              className="btn btn-book"
+                              disabled={!isBookingReady(day)}
+                              onClick={() => handleBook(day)}
+                            >
+                              Đặt phòng
+                            </button>
+                          </>
+                        ) : (
+                          <p>Đang tải chi tiết...</p>
+                        )}
                       </div>
                     )}
                   </div>

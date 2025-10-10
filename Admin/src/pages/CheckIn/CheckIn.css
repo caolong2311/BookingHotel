@@ -23,7 +23,7 @@
   max-width: 300px;
 }
 
-.btn {
+.btn-checkin {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
@@ -61,7 +61,6 @@
   overflow-y: auto;
 }
 
-/* Card mỗi ngày */
 .booking-card {
   margin-bottom: 20px;
   padding: 15px;
@@ -119,3 +118,24 @@
   color: #666;
   font-size: 14px;
 }
+
+.btn-book {
+  margin-top: 12px;
+  background-color: #fdaf17;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-book:hover {
+  background-color: #a67003;
+}
+
+.btn-book:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+

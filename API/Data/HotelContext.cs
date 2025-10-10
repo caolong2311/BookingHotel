@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using API.DTO;
 using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,11 +33,15 @@ public partial class HotelContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public DbSet<RoomUserDTO> RoomWithCheckout { get; set; }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<RoomUserDTO>().HasNoKey();
         modelBuilder.Entity<Booking>(entity =>
         {
             entity.HasKey(e => e.BookingId).HasName("PK__Bookings__73951ACD29803287");
