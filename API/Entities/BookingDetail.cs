@@ -15,6 +15,8 @@ public partial class BookingDetail
 
     public decimal Price { get; set; }
 
+    public int Status { get; set; } = 0;
+
     public virtual Booking Booking { get; set; } = null!;
 
     public virtual ICollection<BookingDetailService> BookingDetailServices { get; set; } = new List<BookingDetailService>();

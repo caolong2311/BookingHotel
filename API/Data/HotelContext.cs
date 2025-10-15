@@ -41,6 +41,7 @@ public partial class HotelContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<BookingDetailService>().ToTable(tb => tb.HasTrigger("trg_UpdatePrice_BookingDetailService"));
         modelBuilder.Entity<RoomUserDTO>().HasNoKey();
         modelBuilder.Entity<Booking>(entity =>
         {
@@ -83,6 +84,9 @@ public partial class HotelContext : DbContext
                 .HasForeignKey(d => d.RoomTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BookingDetails_RoomTypes");
+            entity.Property(e => e.Status)
+                 .HasColumnType("int")
+                 .HasDefaultValue(0);
         });
 
         modelBuilder.Entity<BookingDetailService>(entity =>

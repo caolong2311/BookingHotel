@@ -11,5 +11,7 @@
 
         public List<ServiceDTO> ServiceList { get; set; }
 
+        public decimal Total { get; set; }
+
     }
 }

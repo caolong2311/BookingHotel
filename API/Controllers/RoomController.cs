@@ -17,10 +17,38 @@ namespace API.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        [HttpPut("check-out")]
+        public IActionResult CheckOut([FromQuery] int bookingDetailId)
+        {
+            try
+            {
+                var bookingDetail = _unitOfWork.BookingDetail.GetAll().Where(b => b.BookingDetailId == bookingDetailId).FirstOrDefault();
+                if (bookingDetail == null)
+                {
+                    return BadRequest("khong tim thay phong");
+                }
+                bookingDetail.Status = 1;
+                var room = _unitOfWork.Room.GetAll().Where(r => r.RoomNumber == bookingDetail.RoomNumber).FirstOrDefault();
+                room.Status = "Còn phòng";
+                _unitOfWork.Save();
+                var detail = _unitOfWork.BookingDetail.GetAll().Where(d => d.BookingId == bookingDetail.BookingId && d.Status == 0).ToList();
+                if (detail.Count == 0)
+                {
+                    var booking = _unitOfWork.Booking.GetAll().Where(b => b.BookingId == bookingDetail.BookingId).FirstOrDefault();
+                    booking.Status = "Đã trả phòng";
+                    _unitOfWork.Save();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet]
         public List<RoomUserDTO> GetRoom()
         {
-          return _unitOfWork.Room.GetRoomsWithCheckout();
+            return _unitOfWork.Room.GetRoomsWithCheckout();
         }
         [HttpGet("service")]
         public CheckOutDTO GerService([FromQuery] string roomNumber)
@@ -46,8 +74,18 @@ namespace API.Controllers
                               select new ServiceDTO
                               {
                                   ServiceName = s.ServiceName,
-                                  Quantity = bds.Quantity
+                                  Quantity = bds.Quantity,
+                                  Price = bds.Price
                               };
+            decimal sum = 0;
+            if (listService.Any())
+            {
+                foreach (var item in listService)
+                {
+                    sum += item.Price ?? 0;
+                }
+                ;
+            }
             CheckOutDTO checkOutDTO = new CheckOutDTO
             {
                 BookingDetailId = result.BookingDetailId,
@@ -55,10 +93,11 @@ namespace API.Controllers
                 FullName = result.FullName,
                 CheckInDate = result.CheckInDate,
                 CheckOutDate = result.CheckOutDate,
-                ServiceList = listService.ToList()
+                ServiceList = listService.ToList(),
+                Total = sum
             };
             return checkOutDTO;
-            
+
         }
     }
 }
