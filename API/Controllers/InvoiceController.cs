@@ -57,8 +57,8 @@ namespace API.Controllers
                 };
                 doc.Add(title);
 
-                var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
-                doc.Add(new Paragraph($"Mã hóa đơn: {dto.BookingDetailId}", boldFont)
+                var headerFont = new Font(bf, 12, Font.BOLD);
+                doc.Add(new Paragraph($"Mã hóa đơn: {dto.BookingDetailId}", headerFont)
                 {
                     SpacingAfter = 8
                 });
@@ -76,7 +76,6 @@ namespace API.Controllers
                 var table = new PdfPTable(4) { WidthPercentage = 100 };
                 table.SetWidths(new float[] { 4, 2, 2, 2 });
 
-                var headerFont = new Font(bf, 12, Font.BOLD);
                 table.AddCell(new PdfPCell(new Phrase("Tên dịch vụ", headerFont)));
                 table.AddCell(new PdfPCell(new Phrase("Số lượng", headerFont)));
                 table.AddCell(new PdfPCell(new Phrase("Đơn giá", headerFont)));

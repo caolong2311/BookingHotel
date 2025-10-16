@@ -50,7 +50,36 @@ namespace API.Controllers
         [HttpGet]
         public List<RoomUserDTO> GetRoom()
         {
-            return _unitOfWork.Room.GetRoomsWithCheckout();
+            var room = _unitOfWork.Room.GetAll().Select(r => new RoomUserDTO
+            {
+                RoomNumber = r.RoomNumber,
+                Status = r.Status
+            }).ToList();
+            DateTime today = DateTime.Today;
+            DateTime tomorrow = today.AddDays(1);
+            var result = (from bd in _unitOfWork.BookingDetail.GetAll()
+                          join b in _unitOfWork.Booking.GetAll()
+                          on bd.BookingId equals b.BookingId
+                          where b.CheckOutDate >= today && b.CheckOutDate < tomorrow
+                          select new
+                          {
+                              RoomNumber = bd.RoomNumber,
+                          }).ToList();
+            foreach (var r in room)
+            {
+                foreach (var item in result)
+                {
+                    if (r.RoomNumber == item.RoomNumber)
+                    {
+                        r.Status = "Trả phòng";
+                    }
+                }
+            }
+            return room.ToList();
+                        
+
+
+
         }
         [HttpGet("service")]
         public CheckOutDTO GerService([FromQuery] string roomNumber)

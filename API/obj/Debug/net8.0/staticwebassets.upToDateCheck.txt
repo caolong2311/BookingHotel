@@ -1,3 +1,5 @@
 wwwroot\invoices\Invoice_2_20251016185557.pdf
 wwwroot\invoices\Invoice_19_20251016185934.pdf
 wwwroot\invoices\Invoice_11_20251016234940.pdf
+wwwroot\invoices\Invoice_12_20251017002632.pdf
+wwwroot\invoices\Invoice_26_20251017002900.pdf

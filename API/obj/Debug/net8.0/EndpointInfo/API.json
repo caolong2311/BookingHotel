@@ -895,11 +895,6 @@
           "status": {
             "type": "string",
             "nullable": true
-          },
-          "checkOutDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           }
         },
         "additionalProperties": false

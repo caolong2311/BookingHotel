@@ -22,7 +22,7 @@ const CheckOut = () => {
     },
   };
 
- 
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -153,7 +153,7 @@ const CheckOut = () => {
     }
   };
 
-  
+
   const handleCheckout = async () => {
     if (!roomDetail?.bookingDetailId) {
       alert("Không tìm thấy mã BookingDetail!");
@@ -215,46 +215,42 @@ const CheckOut = () => {
 
   return (
     <div className="checkout-container">
-      {/* =================== DANH SÁCH PHÒNG =================== */}
+
       <div className="room-section">
         <h2 className="checkout-title">Quản lý phòng</h2>
         <div className="room-grid">
           {rooms.map((room, index) => {
-            const today = new Date().toISOString().split("T")[0];
-            const checkoutDate = room.checkOutDate
-              ? new Date(room.checkOutDate).toISOString().split("T")[0]
-              : null;
             let cardClass = "room-card";
-            let displayStatus = room.status;
 
-            if (room.status === "Hết phòng") {
-              if (checkoutDate === today) {
-                cardClass += " today-checkout";
-                displayStatus = "Trả phòng";
-              } else {
+            switch (room.status) {
+              case "Hết phòng":
                 cardClass += " booked";
-              }
-            } else {
-              cardClass += " available";
+                break;
+              case "Trả phòng":
+                cardClass += " today-checkout"; 
+                break;
+              case "Còn phòng":
+              default:
+                cardClass += " available"; 
+                break;
             }
 
             return (
               <div
                 key={index}
-                className={`${cardClass} ${
-                  selectedRoom?.roomNumber === room.roomNumber ? "selected" : ""
-                }`}
+                className={`${cardClass} ${selectedRoom?.roomNumber === room.roomNumber ? "selected" : ""
+                  }`}
                 onClick={() => handleRoomClick(room)}
               >
                 <h3>{room.roomNumber}</h3>
-                <p>{displayStatus}</p>
+                <p>{room.status}</p>
               </div>
             );
           })}
         </div>
+
       </div>
 
-      {/* =================== CHI TIẾT PHÒNG =================== */}
       <div className="detail-section">
         {roomDetail ? (
           <>
@@ -305,8 +301,8 @@ const CheckOut = () => {
                 <strong>Tổng tiền:</strong>{" "}
                 {roomDetail.total
                   ? roomDetail.total.toLocaleString("vi-VN", {
-                      maximumFractionDigits: 0,
-                    }) + "₫"
+                    maximumFractionDigits: 0,
+                  }) + "₫"
                   : "0₫"}
               </p>
             </div>
@@ -341,9 +337,8 @@ const CheckOut = () => {
                   {["Đồ ăn", "Nước uống", "Khác"].map((cat) => (
                     <button
                       key={cat}
-                      className={`tab-btn ${
-                        cat === selectedCategory ? "active" : ""
-                      }`}
+                      className={`tab-btn ${cat === selectedCategory ? "active" : ""
+                        }`}
                       onClick={() => setSelectedCategory(cat)}
                     >
                       {cat}
