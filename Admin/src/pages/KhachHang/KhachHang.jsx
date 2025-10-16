@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-
 const KhachHang = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -9,11 +8,24 @@ const KhachHang = () => {
 
   const API_URL = "https://localhost:7182/api/Customer";
 
+  // 🔐 Lấy token và tạo header
+  const token = localStorage.getItem("token");
+  const authHeader = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
 
   const fetchCustomers = async () => {
+    if (!token) {
+      alert("Vui lòng đăng nhập lại!");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, authHeader);
       setCustomers(res.data);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu:", err);
@@ -27,16 +39,20 @@ const KhachHang = () => {
     fetchCustomers();
   }, []);
 
-
   const handleSearch = async () => {
     if (!search.trim()) {
       fetchCustomers();
       return;
     }
 
+    if (!token) {
+      alert("Vui lòng đăng nhập lại!");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, authHeader);
       const filtered = res.data.filter((c) =>
         c.phoneNumber.toLowerCase().includes(search.toLowerCase())
       );

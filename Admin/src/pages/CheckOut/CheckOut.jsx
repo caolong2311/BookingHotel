@@ -13,10 +13,20 @@ const CheckOut = () => {
   const [selectedServices, setSelectedServices] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("Đồ ăn");
 
+  const token = localStorage.getItem("token");
+
+  const authHeader = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  };
+
+ 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const res = await axios.get("https://localhost:7182/api/Room");
+        const res = await axios.get("https://localhost:7182/api/Room", authHeader);
         setRooms(res.data);
       } catch (err) {
         console.error("Lỗi khi lấy dữ liệu phòng:", err);
@@ -27,6 +37,7 @@ const CheckOut = () => {
     fetchRooms();
   }, []);
 
+
   const handleRoomClick = async (room) => {
     if (room.status === "Còn phòng") {
       setRoomDetail(null);
@@ -36,7 +47,8 @@ const CheckOut = () => {
 
     try {
       const res = await axios.get(
-        `https://localhost:7182/api/room/service?roomNumber=${room.roomNumber}`
+        `https://localhost:7182/api/room/service?roomNumber=${room.roomNumber}`,
+        authHeader
       );
       setSelectedRoom(room);
       setRoomDetail(res.data);
@@ -46,9 +58,10 @@ const CheckOut = () => {
     }
   };
 
+
   const handleAddService = async () => {
     try {
-      const res = await axios.get("https://localhost:7182/api/service");
+      const res = await axios.get("https://localhost:7182/api/service", authHeader);
       setServiceList(res.data);
       setSelectedServices({});
       setSelectedCategory("Đồ ăn");
@@ -101,6 +114,7 @@ const CheckOut = () => {
     }));
   };
 
+
   const handleConfirmAdd = async () => {
     if (!roomDetail?.bookingDetailId) {
       alert("Không tìm thấy mã bookingDetail!");
@@ -128,9 +142,7 @@ const CheckOut = () => {
       await axios.post(
         "https://localhost:7182/api/service/service-user",
         dataToSend,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        authHeader
       );
       alert("Thêm dịch vụ thành công!");
       setShowServicePopup(false);
@@ -141,6 +153,7 @@ const CheckOut = () => {
     }
   };
 
+  
   const handleCheckout = async () => {
     if (!roomDetail?.bookingDetailId) {
       alert("Không tìm thấy mã BookingDetail!");
@@ -153,8 +166,11 @@ const CheckOut = () => {
 
     try {
       await axios.put(
-        `https://localhost:7182/api/Room/check-out?bookingDetailId=${roomDetail.bookingDetailId}`
+        `https://localhost:7182/api/Room/check-out?bookingDetailId=${roomDetail.bookingDetailId}`,
+        {},
+        authHeader
       );
+
       alert("Trả phòng thành công!");
 
       if (roomDetail.serviceList && roomDetail.serviceList.length > 0) {
@@ -164,7 +180,7 @@ const CheckOut = () => {
           fullName: roomDetail.fullName,
           checkInDate: roomDetail.checkInDate,
           checkOutDate: roomDetail.checkOutDate,
-          serviceList: roomDetail.serviceList.map(s => ({
+          serviceList: roomDetail.serviceList.map((s) => ({
             serviceName: s.serviceName,
             quantity: s.quantity,
             price: s.price || 0,
@@ -175,21 +191,17 @@ const CheckOut = () => {
         const resInvoice = await axios.post(
           "https://localhost:7182/api/invoice/generate",
           invoiceData,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
+          authHeader
         );
 
         if (resInvoice.data?.invoiceUrl) {
-
           window.open(resInvoice.data.invoiceUrl, "_blank");
         }
 
         alert("Đã tạo hóa đơn thành công!");
       }
 
-
-      const res = await axios.get("https://localhost:7182/api/Room");
+      const res = await axios.get("https://localhost:7182/api/Room", authHeader);
       setRooms(res.data);
       setRoomDetail(null);
       setSelectedRoom(null);
@@ -199,11 +211,11 @@ const CheckOut = () => {
     }
   };
 
-
   if (loading) return <p>Đang tải dữ liệu phòng...</p>;
 
   return (
     <div className="checkout-container">
+      {/* =================== DANH SÁCH PHÒNG =================== */}
       <div className="room-section">
         <h2 className="checkout-title">Quản lý phòng</h2>
         <div className="room-grid">
@@ -229,8 +241,9 @@ const CheckOut = () => {
             return (
               <div
                 key={index}
-                className={`${cardClass} ${selectedRoom?.roomNumber === room.roomNumber ? "selected" : ""
-                  }`}
+                className={`${cardClass} ${
+                  selectedRoom?.roomNumber === room.roomNumber ? "selected" : ""
+                }`}
                 onClick={() => handleRoomClick(room)}
               >
                 <h3>{room.roomNumber}</h3>
@@ -241,6 +254,7 @@ const CheckOut = () => {
         </div>
       </div>
 
+      {/* =================== CHI TIẾT PHÒNG =================== */}
       <div className="detail-section">
         {roomDetail ? (
           <>
@@ -285,15 +299,18 @@ const CheckOut = () => {
                 </tbody>
               </table>
             </div>
+
             <div className="total-section">
               <p>
                 <strong>Tổng tiền:</strong>{" "}
                 {roomDetail.total
-                  ? roomDetail.total
-                    .toLocaleString("vi-VN", { maximumFractionDigits: 0 }) + "₫"
+                  ? roomDetail.total.toLocaleString("vi-VN", {
+                      maximumFractionDigits: 0,
+                    }) + "₫"
                   : "0₫"}
               </p>
             </div>
+
             <div className="action-buttons">
               <button className="btn add-btn" onClick={handleAddService}>
                 Thêm dịch vụ
@@ -305,11 +322,12 @@ const CheckOut = () => {
           </>
         ) : (
           <div className="placeholder-text">
-            <p></p>
+            <p>Chọn phòng để xem chi tiết</p>
           </div>
         )}
       </div>
 
+      {/* =================== POPUP DỊCH VỤ =================== */}
       {showServicePopup && (
         <div className="popup-overlay">
           <div className="popup enhanced-popup">
@@ -323,8 +341,9 @@ const CheckOut = () => {
                   {["Đồ ăn", "Nước uống", "Khác"].map((cat) => (
                     <button
                       key={cat}
-                      className={`tab-btn ${cat === selectedCategory ? "active" : ""
-                        }`}
+                      className={`tab-btn ${
+                        cat === selectedCategory ? "active" : ""
+                      }`}
                       onClick={() => setSelectedCategory(cat)}
                     >
                       {cat}

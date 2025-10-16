@@ -12,6 +12,8 @@
         IRoomRepository Room { get; set; }
 
         IServiceRepository Service { get; set; }
+
+        IUserRepository User { get; set; }
         int Save();
         Task ExecuteInTransactionAsync(Func<Task> action);
     }

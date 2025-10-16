@@ -2,6 +2,7 @@
 using API.Entities;
 using API.Repository.IRepository;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BookingController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -29,7 +31,7 @@ namespace API.Controllers
             _httpClient = httpClientFactory.CreateClient();
             _emailService = emailService;
         }
-
+        [AllowAnonymous]
         [HttpPost("create-payment")]
         public async Task<IActionResult> CreatePayment([FromBody] PaymentDTO dto)
         {
@@ -102,7 +104,7 @@ namespace API.Controllers
                 return BadRequest(new { success = false, message = momoResponse?.Message ?? "Lỗi không xác định", raw = responseContent });
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Booking(BookingDto bookingDto)
         {
@@ -281,6 +283,7 @@ namespace API.Controllers
 
             //return checkInList;
         }
+        [AllowAnonymous]
         [HttpGet("detail-booking")]
         public List<RoomDetailDTO> DetailBooking([FromQuery] int bookingID)
         {
@@ -319,8 +322,8 @@ namespace API.Controllers
         }
         [HttpPut("update-room")]
         public async Task<IActionResult> UpdateRoom(
-    [FromQuery] int bookingID,
-    [FromBody] List<UpdateRoomDTO> dto)
+             [FromQuery] int bookingID,
+             [FromBody] List<UpdateRoomDTO> dto)
         {
             try
             {

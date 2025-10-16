@@ -2,12 +2,14 @@
 using API.Entities;
 using API.Repository.IRepository;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RoomController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

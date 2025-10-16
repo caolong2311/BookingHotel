@@ -30,8 +30,18 @@
     border-color: tomato;
 }
 
-/* @media(max-width: 900px){
-    .sidebar-option p{
-        display: none;
-    }
-} */
+
+
+.logout-btn {
+  margin-top: 200px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: #e1292c;
+  color: white;
+}
+
+.logout-btn:hover {
+  background-color: #ff4d4f;
+  color: white;
+}

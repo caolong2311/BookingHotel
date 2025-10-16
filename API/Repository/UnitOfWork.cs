@@ -15,6 +15,8 @@ namespace API.Repository
 
         public IServiceRepository Service { get; set; }
 
+        public IUserRepository User { get; set; }
+
         private readonly HotelContext _context;
 
         public UnitOfWork(HotelContext context)
@@ -27,6 +29,7 @@ namespace API.Repository
             Room = new RoomRepository(_context);
             ServiceDetail = new ServiceDetailRepository(_context);
             Service = new ServiceRepository(_context);
+            User = new UserRepository(_context);
         }
 
         public  int Save()

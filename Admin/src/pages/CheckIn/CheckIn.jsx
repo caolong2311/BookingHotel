@@ -8,7 +8,7 @@ const CheckIn = () => {
   const [expanded, setExpanded] = useState({})
   const [selectedRooms, setSelectedRooms] = useState({})
   const [loading, setLoading] = useState(false)
-
+  const token = localStorage.getItem("token");
   const handleSearch = async () => {
     if (!phone.trim()) return alert('Vui lòng nhập số điện thoại')
 
@@ -16,9 +16,14 @@ const CheckIn = () => {
     setCustomer(null)
 
     try {
-      const res = await axios.get(`https://localhost:7182/api/booking/check-in`, {
-        params: { phone },
-      })
+      const res = await axios.get(
+        `https://localhost:7182/api/booking/check-in?phone=${phone}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = res.data
 
@@ -72,6 +77,9 @@ const CheckIn = () => {
     try {
       const res = await axios.get(`https://localhost:7182/api/booking/detail-booking`, {
         params: { bookingID: bookingId },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       const data = res.data
 
@@ -80,14 +88,14 @@ const CheckIn = () => {
         bookingsByDate: prev.bookingsByDate.map(b =>
           b.bookingId === bookingId
             ? {
-                ...b,
-                details: data.map(d => ({
-                  roomTypeId: d.roomTypeId,
-                  typeRoom: d.typeName,
-                  quantity: d.quantity,
-                  rooms: d.roomDTOs.map(r => r.roomNumber),
-                })),
-              }
+              ...b,
+              details: data.map(d => ({
+                roomTypeId: d.roomTypeId,
+                typeRoom: d.typeName,
+                quantity: d.quantity,
+                rooms: d.roomDTOs.map(r => r.roomNumber),
+              })),
+            }
             : b
         ),
       }))
@@ -107,31 +115,37 @@ const CheckIn = () => {
   }
 
   const handleBook = async (day) => {
-  try {
-    const body = day.details.map((b) => {
-      const key = `${day.checkInDate}_${day.checkOutDate}_${b.typeRoom}`
-      const selected = selectedRooms[key] || []
-      return {
-        RoomTypeId: b.roomTypeId,
-        roomDTOs: selected.map(r => ({ RoomNumber: r }))
-      }
-    })
+    try {
+      const body = day.details.map((b) => {
+        const key = `${day.checkInDate}_${day.checkOutDate}_${b.typeRoom}`
+        const selected = selectedRooms[key] || []
+        return {
+          RoomTypeId: b.roomTypeId,
+          roomDTOs: selected.map(r => ({ RoomNumber: r }))
+        }
+      })
 
-    await axios.put(
-      `https://localhost:7182/api/booking/update-room`,
-      body,
-      { params: { bookingID: day.bookingId } }
-    )
+      await axios.put(
+        `https://localhost:7182/api/booking/update-room`,
+        body,
+        {
+          params: { bookingID: day.bookingId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
 
-    alert('✅ Đặt phòng thành công!')
+      )
 
-    handleReset()
+      alert('Đặt phòng thành công!')
 
-  } catch (err) {
-    console.error('Lỗi khi đặt phòng:', err)
-    alert('❌ Không thể đặt phòng. Vui lòng thử lại.')
+      handleReset()
+
+    } catch (err) {
+      console.error('Lỗi khi đặt phòng:', err)
+      alert('Không thể đặt phòng. Vui lòng thử lại.')
+    }
   }
-}
 
 
   return (
@@ -198,7 +212,7 @@ const CheckIn = () => {
                                     ))}
                                   </div>
                                   <p className="selected-info">
-                                    ✅ Đã chọn: {selected.length}/{b.quantity}
+                                    Đã chọn: {selected.length}/{b.quantity}
                                   </p>
                                 </div>
                               )

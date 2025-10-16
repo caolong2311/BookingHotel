@@ -17,12 +17,21 @@ const DichVu = () => {
     status: "Đang hoạt động",
   });
 
+  const token = localStorage.getItem("token");
+
+
+  const authHeader = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  };
+
   const API_URL = "https://localhost:7182/api/Service";
 
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, authHeader);
       setServices(res.data);
     } catch (err) {
       console.error("Lỗi khi tải dữ liệu:", err);
@@ -43,7 +52,7 @@ const DichVu = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, authHeader);
       const filtered = res.data.filter((s) =>
         s.serviceName.toLowerCase().includes(search.toLowerCase())
       );
@@ -105,10 +114,10 @@ const DichVu = () => {
         await axios.put(`${API_URL}/${editServiceId}`, {
           serviceId: editServiceId,
           ...payload,
-        });
+        }, authHeader);
         alert("Cập nhật dịch vụ thành công!");
       } else {
-        await axios.post(API_URL + "/add-service", payload);
+        await axios.post(API_URL + "/add-service", payload, authHeader);
         alert("Thêm dịch vụ thành công!");
       }
 
