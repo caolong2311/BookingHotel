@@ -156,6 +156,39 @@ const CheckOut = () => {
         `https://localhost:7182/api/Room/check-out?bookingDetailId=${roomDetail.bookingDetailId}`
       );
       alert("Trả phòng thành công!");
+
+      if (roomDetail.serviceList && roomDetail.serviceList.length > 0) {
+        const invoiceData = {
+          bookingDetailId: roomDetail.bookingDetailId,
+          roomNumber: roomDetail.roomNumber,
+          fullName: roomDetail.fullName,
+          checkInDate: roomDetail.checkInDate,
+          checkOutDate: roomDetail.checkOutDate,
+          serviceList: roomDetail.serviceList.map(s => ({
+            serviceName: s.serviceName,
+            quantity: s.quantity,
+            price: s.price || 0,
+          })),
+          total: roomDetail.total || 0,
+        };
+
+        const resInvoice = await axios.post(
+          "https://localhost:7182/api/invoice/generate",
+          invoiceData,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (resInvoice.data?.invoiceUrl) {
+
+          window.open(resInvoice.data.invoiceUrl, "_blank");
+        }
+
+        alert("Đã tạo hóa đơn thành công!");
+      }
+
+
       const res = await axios.get("https://localhost:7182/api/Room");
       setRooms(res.data);
       setRoomDetail(null);

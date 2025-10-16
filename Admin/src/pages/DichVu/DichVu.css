@@ -1,0 +1,131 @@
+.checkin-wrapper {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.checkin-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.btn-add {
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 435px;
+  font-weight: bold;
+}
+
+.btn-add:hover {
+  background-color: #0056b3;
+}
+
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.service-table th,
+.service-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.service-table th {
+  background-color: #f2f2f2;
+}
+.service-table tbody.table-body {
+  max-height: 500px; 
+  overflow-y: auto;
+}
+.btn-edit {
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.modal input,
+.modal select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-save {
+  background-color: #ffc107;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background-color: #dfb022;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+}

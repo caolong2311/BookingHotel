@@ -4,7 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 import CheckIn from './pages/CheckIn/CheckIn'
 import CheckOut from './pages/CheckOut/CheckOut'
 import DichVu from './pages/DichVu/DichVu'
-import HoaDon from './pages/HoaDon/HoaDon'
+import KhachHang from './pages/KhachHang/KhachHang'
+
 function App() {
 
   return (
@@ -15,7 +16,7 @@ function App() {
            <Route path="/" element={<CheckIn />} />
            <Route path="/check-out" element={<CheckOut />} />
            <Route path="/dich-vu" element={<DichVu />} />
-           <Route path="/hoa-don" element={<HoaDon />} />
+           <Route path="/khach-hang" element={<KhachHang />} />
         </Routes>
       </div>
     </>

@@ -211,7 +211,7 @@ namespace API.Controllers
                                && b.Status == "Đặt phòng"
                                && DateTime.Now >= b.CheckInDate
                                && DateTime.Now <= b.CheckOutDate.AddDays(1)
-                               && b.Status != "Đã đặt phòng"
+                               && b.Status != "Đã nhận phòng"
                          select new CustomerBookingDTO
                          {
                              BookingId = b.BookingId,
@@ -332,7 +332,7 @@ namespace API.Controllers
                     if (booking == null)
                         throw new Exception($"Không tìm thấy booking ID = {bookingID}");
 
-                    booking.Status = "Đã đặt phòng";
+                    booking.Status = "Đã nhận phòng";
                     _unitOfWork.Booking.Update(booking);
 
                     foreach (var b in dto)

@@ -15,13 +15,13 @@ const Sidebar = () => {
                     <img src={assets.order_icon} alt="" />
                     <p>Check-out</p>
                 </NavLink>
-                <NavLink to='/hoa-don' className="sidebar-option">
-                    <img src={assets.order_icon} alt="" />
-                    <p>Hóa đơn</p>
-                </NavLink>
                 <NavLink to='/dich-vu' className="sidebar-option">
                     <img src={assets.order_icon} alt="" />
                     <p>Dịch vụ</p>
+                </NavLink>
+                <NavLink to='/khach-hang' className="sidebar-option">
+                    <img src={assets.order_icon} alt="" />
+                    <p>Khách hàng</p>
                 </NavLink>
             </div>
         </div>

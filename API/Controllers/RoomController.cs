@@ -58,7 +58,7 @@ namespace API.Controllers
                           on bd.BookingId equals b.BookingId
                           join c in _unitOfWork.Customer.GetAll()
                           on b.CustomerId equals c.CustomerId
-                          where b.Status == "Đã đặt phòng"
+                          where b.Status == "Đã nhận phòng"
                           && bd.RoomNumber == roomNumber
                           select new
                           {

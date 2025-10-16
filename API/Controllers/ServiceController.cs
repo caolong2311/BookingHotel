@@ -19,6 +19,29 @@ namespace API.Controllers
         {
             return _unitOfWork.Service.GetAll().Where(s => s.Status == "Đang hoạt động").ToList();
         }
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, Service service)
+        {
+            if (id != service.ServiceId) return BadRequest("ID không khớp");
+
+            _unitOfWork.Service.Update(service);
+            _unitOfWork.Save();
+            return Ok("Cập nhật dịch vụ thành công");
+        }
+        [HttpPost("add-service")]
+        public ActionResult Post(Service service)
+        {
+            try
+            {
+                _unitOfWork.Service.Add(service);
+                _unitOfWork.Save();
+                return Ok("Thêm dịch vụ thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPost("service-user")]
         public IActionResult GetService([FromBody] List<ServiceDetailDTO> dto)
         {
